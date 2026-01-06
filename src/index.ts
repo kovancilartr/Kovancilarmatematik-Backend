@@ -10,7 +10,6 @@ import categoryRoutes from "./routes/category.routes";
 import subjectRoutes from "./routes/subject.routes";
 import lessonRoutes from "./routes/lesson.routes";
 import materialRoutes from "./routes/material.routes"; // NEW: Import material routes
-import siteSettingsRoutes from "./routes/siteSettingsRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
 // Import middleware
@@ -55,7 +54,6 @@ app.get("/api", (req, res) => {
       subjects: "/api/subjects",
       lessons: "/api/lessons",
       materials: "/api/materials", // NEW: Add materials endpoint
-      siteSettings: "/api/site-settings",
       upload: "/api/upload",
     },
   });
@@ -75,9 +73,6 @@ app.use("/api/lessons", lessonRoutes);
 
 // Material routes // NEW: Register material routes
 app.use("/api/materials", materialRoutes);
-
-// Site settings routes
-app.use("/api/site-settings", siteSettingsRoutes);
 
 // Upload routes
 app.use("/api/upload", uploadRoutes);
@@ -106,7 +101,6 @@ app.listen(PORT, () => {
   console.log(`💡 Subjects endpoints: http://localhost:${PORT}/api/subjects`);
   console.log(`🎓 Lessons endpoints: http://localhost:${PORT}/api/lessons`);
   console.log(`📄 Materials endpoints: http://localhost:${PORT}/api/materials`); // NEW: Add materials to console log
-  console.log(`⚙️  Site settings endpoints: http://localhost:${PORT}/api/site-settings`);
   console.log(`📁 Upload endpoints: http://localhost:${PORT}/api/upload`);
   console.log(`🖼️  Static files: http://localhost:${PORT}/uploads`);
   console.log(`📚 Environment: ${process.env.NODE_ENV || "development"}`);
