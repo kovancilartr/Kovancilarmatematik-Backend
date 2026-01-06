@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Kategori (Örn: TYT Matematik, AYT Geometri)
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique // Kategori adı
+  order    Int // Sıralama için
+  subjects Subject[] // Bu kategoriye ait kazanımlar
+}
+
+// Kazanım (Örn: Ebob-Ekok, Rasyonel Sayılar)
+model Subject {
+  id         String   @id @default(uuid())
+  name       String // Kazanım adı
+  order      Int // Kategori içindeki sıralaması
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  lessons    Lesson[] // Bu kazanıma ait dersler
+}
+
+// Ders (Örn: Ebob-Ekok-1, Logaritma-2)
+model Lesson {
+  id        String     @id @default(uuid())
+  name      String // Dersin adı
+  videoUrl  String // Dersin video linki
+  subjectId String
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  materials Material[] // Derse ait ek materyaller
+}
+
+// Materyal (Örn: Ebob-Ekok-Test.pdf)
+model Material {
+  id       String @id @default(uuid())
+  name     String // Materyalin adı
+  url      String // Materyalin dosya linki
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+// Bu model olduğu gibi kalacak
+model SiteSettings {
+  id                String   @id @default(uuid())
+  siteName          String   @db.VarChar(100)
+  siteDescription   String?  @db.Text
+  logoUrl           String?  @db.VarChar(500)
+  faviconUrl        String?  @db.VarChar(500)
+  primaryColor      String?  @db.VarChar(7)
+  secondaryColor    String?  @db.VarChar(7)
+  contactEmail      String?  @db.VarChar(255)
+  contactPhone      String?  @db.VarChar(20)
+  socialLinks       Json?
+  seoKeywords       String[] @default([])
+  seoTitle          String?  @db.VarChar(255)
+  seoDescription    String?  @db.VarChar(500)
+  maintenanceMode   Boolean  @default(false)
+  allowRegistration Boolean  @default(true)
+  maxFileSize       Int      @default(10485760)
+  allowedFileTypes  String[] @default(["pdf", "mp4", "jpg", "jpeg", "png"])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique @db.VarChar(255)
+  name          String         @db.VarChar(100)
+  password      String         @db.VarChar(255)
+  role          Role
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+enum Role {
+  ADMIN
+}
