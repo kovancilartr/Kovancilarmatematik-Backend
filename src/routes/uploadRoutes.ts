@@ -7,7 +7,7 @@ import { Role } from '@prisma/client'; // Import Role enum
 const router = Router();
 
 // Tüm upload route'ları admin yetkisi gerektirir
-router.use(authenticateToken, authorizeRole(Role.ADMIN)); // Add authorizeRole(Role.ADMIN)
+router.use(authenticateToken, authorizeRole([Role.ADMIN])); // DEĞİŞTİRİLDİ
 
 // Tek dosya upload
 router.post('/single', uploadSingle('file'), uploadController.uploadSingle);

@@ -9,7 +9,12 @@ import authRoutes from "./routes/auth.routes";
 import categoryRoutes from "./routes/category.routes";
 import subjectRoutes from "./routes/subject.routes";
 import lessonRoutes from "./routes/lesson.routes";
-import materialRoutes from "./routes/material.routes"; // NEW: Import material routes
+import materialRoutes from "./routes/material.routes";
+import learningObjectiveRoutes from "./routes/learningObjective.routes";
+import questionRoutes from "./routes/question.routes";
+import testRoutes from "./routes/test.routes";
+import testAssignmentRoutes from "./routes/testAssignment.routes"; // NEW
+import userRoutes from "./routes/user.routes"; // NEW: User Management
 import uploadRoutes from "./routes/uploadRoutes";
 
 // Import middleware
@@ -53,7 +58,12 @@ app.get("/api", (req, res) => {
       categories: "/api/categories",
       subjects: "/api/subjects",
       lessons: "/api/lessons",
-      materials: "/api/materials", // NEW: Add materials endpoint
+      materials: "/api/materials",
+      learningObjectives: "/api/learning-objectives",
+      questions: "/api/questions",
+      tests: "/api/tests",
+      assignments: "/api/assignments", // NEW
+      users: "/api/users", // NEW
       upload: "/api/upload",
     },
   });
@@ -71,8 +81,23 @@ app.use("/api/subjects", subjectRoutes);
 // Lesson routes
 app.use("/api/lessons", lessonRoutes);
 
-// Material routes // NEW: Register material routes
+// Material routes
 app.use("/api/materials", materialRoutes);
+
+// Learning Objective routes
+app.use("/api/learning-objectives", learningObjectiveRoutes);
+
+// Question routes
+app.use("/api/questions", questionRoutes);
+
+// Test routes
+app.use("/api/tests", testRoutes);
+
+// Test Assignment routes // NEW
+app.use("/api/assignments", testAssignmentRoutes);
+
+// User Management routes // NEW
+app.use("/api/users", userRoutes);
 
 // Upload routes
 app.use("/api/upload", uploadRoutes);
@@ -100,8 +125,13 @@ app.listen(PORT, () => {
   console.log(`📚 Categories endpoints: http://localhost:${PORT}/api/categories`);
   console.log(`💡 Subjects endpoints: http://localhost:${PORT}/api/subjects`);
   console.log(`🎓 Lessons endpoints: http://localhost:${PORT}/api/lessons`);
-  console.log(`📄 Materials endpoints: http://localhost:${PORT}/api/materials`); // NEW: Add materials to console log
-  console.log(`📁 Upload endpoints: http://localhost:${PORT}/api/upload`);
+  console.log(`📄 Materials endpoints: http://localhost:${PORT}/api/materials`);
+  console.log(`🎯 Learning Objectives endpoints: http://localhost:${PORT}/api/learning-objectives`);
+  console.log(`❓ Questions endpoints: http://localhost:${PORT}/api/questions`);
+  console.log(`📝 Tests endpoints: http://localhost:${PORT}/api/tests`);
+  console.log(`📨 Assignments endpoints: http://localhost:${PORT}/api/assignments`); // NEW
+  console.log(`👥 Users endpoints: http://localhost:${PORT}/api/users`); // NEW
+  console.log(`📁 Upload routes: http://localhost:${PORT}/api/upload`);
   console.log(`🖼️  Static files: http://localhost:${PORT}/uploads`);
   console.log(`📚 Environment: ${process.env.NODE_ENV || "development"}`);
 });

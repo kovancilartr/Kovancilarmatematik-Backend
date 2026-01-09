@@ -12,9 +12,21 @@ export const getAllSubjects = async () => {
       order: 'asc',
     },
     include: {
-        category: true, // Include category information
-        lessons: true, // Also include related lessons
-    }
+      category: true, // Kategori bilgisi
+      learningObjectives: {
+        orderBy: {
+          order: 'asc',
+        },
+        include: {
+          questions: {
+            orderBy: {
+              // Soruları burada bir alana göre sıralayabilirsiniz, örn: oluşturulma tarihi
+              id: 'asc',
+            },
+          },
+        },
+      },
+    },
   });
 };
 

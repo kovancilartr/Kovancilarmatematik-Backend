@@ -23,7 +23,7 @@ router.get('/:id', getMaterialByIdHandler); // Get a single material by ID
 router.post(
     '/',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(createMaterialSchema),
     createMaterialHandler
 );
@@ -31,7 +31,7 @@ router.post(
 router.put(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(updateMaterialSchema),
     updateMaterialHandler
 );
@@ -39,8 +39,9 @@ router.put(
 router.delete(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     deleteMaterialHandler
 );
 
 export default router;
+

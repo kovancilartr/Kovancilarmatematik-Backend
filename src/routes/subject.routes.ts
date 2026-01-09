@@ -23,7 +23,7 @@ router.get('/:id', getSubjectByIdHandler); // Get a single subject by ID
 router.post(
     '/',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(createSubjectSchema),
     createSubjectHandler
 );
@@ -31,7 +31,7 @@ router.post(
 router.put(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(updateSubjectSchema),
     updateSubjectHandler
 );
@@ -39,7 +39,7 @@ router.put(
 router.delete(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     deleteSubjectHandler
 );
 

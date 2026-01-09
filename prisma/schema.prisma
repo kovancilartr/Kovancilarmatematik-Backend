@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,25 +9,35 @@ datasource db {
   provider = "postgresql"
 }
 
+// =================================================================
+// Mevcut Modeller (Kurs Sistemi İçin)
+// =================================================================
+
 // Kategori (Örn: TYT Matematik, AYT Geometri)
 model Category {
   id       String    @id @default(uuid())
-  name     String    @unique // Kategori adı
-  order    Int // Sıralama için
-  subjects Subject[] // Bu kategoriye ait kazanımlar
+  name         String        @unique // Kategori adı
+  order        Int // Sıralama için
+  isPublished  Boolean       @default(false) // Yayında mı? (Taslak vs Yayında)
+  isPublic     Boolean       @default(false) // Herkes erişebilir mi? (false = özel/atanmış)
+  subjects     Subject[] // Bu kategoriye ait konular
+  allowedUsers User[]        @relation("CategoryAccess") // Bu kategoriye erişim izni olan kullanıcılar
 }
 
-// Kazanım (Örn: Ebob-Ekok, Rasyonel Sayılar)
+// Konu (Örn: Ebob-Ekok, Rasyonel Sayılar)
 model Subject {
-  id         String   @id @default(uuid())
-  name       String // Kazanım adı
-  order      Int // Kategori içindeki sıralaması
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  lessons    Lesson[] // Bu kazanıma ait dersler
+  id                 String                @id @default(uuid())
+  name               String // Konu adı
+  order              Int // Kategori içindeki sıralaması
+  isPublic           Boolean               @default(false) // Herkes erişebilir mi? (false = sadece üyeler)
+  categoryId         String
+  category           Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  lessons            Lesson[] // Bu konuya ait dersler
+  enrollments        Enrollment[] // Bu konuya kayıtlı öğrenciler
+  learningObjectives LearningObjective[] // Bu konuya ait kazanımlar
 }
 
-// Ders (Örn: Ebob-Ekok-1, Logaritma-2)
+// Ders (Örn: Ebob-Ekok-1, Logaritma-2) - Video dersler için
 model Lesson {
   id        String     @id @default(uuid())
   name      String // Dersin adı
@@ -43,7 +56,97 @@ model Material {
   lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
-// Bu model olduğu gibi kalacak
+// =================================================================
+// Yeni Modeller (Soru Bankası ve Test Sistemi İçin)
+// =================================================================
+
+// Kazanım (Bir konunun alt başlığı)
+model LearningObjective {
+  id        String     @id @default(uuid())
+  name      String // Kazanım adı (Örn: "Üslü denklemler ve çözümleri")
+  order     Int    // Sıralama için
+  subjectId String
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions Question[] // Bu kazanıma ait sorular
+
+  @@map("learning_objectives")
+}
+
+// Soru
+model Question {
+  id                  String            @id @default(uuid())
+  imageUrl            String // Soru görselinin URL'si
+  options             Json // Seçenekler (Örn: {"a": "cevap A", "b": "cevap B", ...})
+  correctAnswer       String // Doğru seçeneğin anahtarı (Örn: "c")
+  difficulty          Int // Zorluk seviyesi (1-5)
+  learningObjectiveId String
+  learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+  tests               TestQuestion[] // Bu sorunun kullanıldığı testler
+
+  @@map("questions")
+}
+
+// Test (Sorulardan oluşan şablon)
+model Test {
+  id            String           @id @default(uuid())
+  name          String // Testin adı (Örn: "Köklü Sayılar Genel Tekrar")
+  description   String?
+  createdById   String
+  createdBy     User             @relation("UserTests", fields: [createdById], references: [id])
+  questions     TestQuestion[] // Testteki sorular (sıralı)
+  assignments   TestAssignment[] // Bu testin atandığı öğrenciler
+
+  @@map("tests")
+}
+
+// Test ve Sorular arasındaki çok-a-çok ilişki için ara tablo
+model TestQuestion {
+  testId     String
+  test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  order      Int // Sorunun test içindeki sırası
+
+  @@id([testId, questionId])
+  @@map("test_questions")
+}
+
+// Test Ataması (Bir testin bir öğrenciye atanması)
+model TestAssignment {
+  id             String          @id @default(uuid())
+  testId         String
+  test           Test            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        User            @relation("StudentAssignments", fields: [studentId], references: [id])
+  status         TestStatus      @default(ASSIGNED)
+  score          Float? // Puan (Örn: 85.5)
+  startedAt      DateTime?
+  completedAt    DateTime?
+  studentAnswers StudentAnswer[]
+
+  @@unique([testId, studentId]) // Bir öğrenciye aynı test sadece bir kere atanabilir
+  @@map("test_assignments")
+}
+
+// Öğrenci Cevabı (Bir öğrencinin bir soruya verdiği cevap)
+model StudentAnswer {
+  id               String         @id @default(uuid())
+  testAssignmentId String
+  testAssignment   TestAssignment @relation(fields: [testAssignmentId], references: [id], onDelete: Cascade)
+  questionId       String
+  // Question ile doğrudan ilişki kurmuyoruz, çünkü soru silinse bile cevabı kalmalı
+  selectedAnswer   String // Öğrencinin seçtiği cevap anahtarı (Örn: "b")
+  isCorrect        Boolean? // Cevabın doğruluğu (hesaplandıktan sonra)
+
+  @@unique([testAssignmentId, questionId]) // BİR ÖĞRENCİ BİR SORUYA SADECE BİR KEZ CEVAP VEREBİLİR
+  @@map("student_answers")
+}
+
+// =bağlantı
+// =================================================================
+// Kullanıcı ve Sistem Modelleri
+// =================================================================
+
 model SiteSettings {
   id                String   @id @default(uuid())
   siteName          String   @db.VarChar(100)
@@ -69,18 +172,34 @@ model SiteSettings {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique @db.VarChar(255)
-  name          String         @db.VarChar(100)
-  password      String         @db.VarChar(255)
-  role          Role
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  refreshTokens RefreshToken[]
+  id              String           @id @default(uuid())
+  email           String           @unique @db.VarChar(255)
+  name            String           @db.VarChar(100)
+  password        String           @db.VarChar(255)
+  role            Role
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  refreshTokens   RefreshToken[]
+  enrollments       Enrollment[] // Öğrencinin kayıtlı olduğu kurslar
+  allowedCategories Category[]       @relation("CategoryAccess") // Öğrencinin erişebildiği özel kategoriler
+  createdTests      Test[]           @relation("UserTests") // Öğretmenin oluşturduğu testler
+  testAssignments TestAssignment[] @relation("StudentAssignments") // Öğrenciye atanan testler
 
   @@index([email])
   @@index([role])
   @@map("users")
+}
+
+// Kursa Kayıt (Öğrenci ve Konu arasındaki çok-a-çok ilişki)
+model Enrollment {
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  enrolledAt DateTime @default(now())
+
+  @@id([studentId, subjectId])
+  @@map("enrollments")
 }
 
 model RefreshToken {
@@ -96,6 +215,19 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+// =================================================================
+// Enums
+// =================================================================
+
 enum Role {
   ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum TestStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }

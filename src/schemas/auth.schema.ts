@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Role } from '@prisma/client';
 
 /**
  * Email validation schema
@@ -66,30 +67,38 @@ const refreshTokenSchema = z
  * Login request schema
  */
 export const loginSchema = z.object({
-  email: emailSchema,
-  password: loginPasswordSchema,
+  body: z.object({
+    email: emailSchema,
+    password: loginPasswordSchema,
+  }),
 });
 
 /**
- * Register request schema
+ * Register request schema (now used for creating users by admin)
  */
 export const registerSchema = z.object({
-  email: emailSchema,
-  password: strongPasswordSchema,
-  name: nameSchema,
-  role: z.literal('ADMIN'),
+  body: z.object({
+    email: emailSchema,
+    password: strongPasswordSchema,
+    name: nameSchema,
+    role: z.nativeEnum(Role),
+  }),
 });
 
 /**
  * Refresh token request schema
  */
 export const refreshTokenRequestSchema = z.object({
-  refreshToken: refreshTokenSchema,
+  body: z.object({
+    refreshToken: refreshTokenSchema,
+  }),
 });
 
 /**
  * Logout request schema
  */
 export const logoutSchema = z.object({
-  refreshToken: refreshTokenSchema,
+  body: z.object({
+    refreshToken: refreshTokenSchema,
+  }),
 });

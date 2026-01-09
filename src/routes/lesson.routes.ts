@@ -23,7 +23,7 @@ router.get('/:id', getLessonByIdHandler); // Get a single lesson by ID
 router.post(
     '/',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(createLessonSchema),
     createLessonHandler
 );
@@ -31,7 +31,7 @@ router.post(
 router.put(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     validateRequest(updateLessonSchema),
     updateLessonHandler
 );
@@ -39,7 +39,7 @@ router.put(
 router.delete(
     '/:id',
     authenticateToken,
-    authorizeRole(Role.ADMIN),
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     deleteLessonHandler
 );
 

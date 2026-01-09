@@ -1,43 +1,43 @@
 import { Router } from 'express';
-import { 
+import {
     createCategoryHandler,
     getAllCategoriesHandler,
     getCategoryByIdHandler,
     updateCategoryHandler,
-    deleteCategoryHandler 
+    deleteCategoryHandler
 } from '../controllers/category.controller';
 import { validateRequest } from '../middleware/validation.middleware';
 import { createCategorySchema, updateCategorySchema } from '../schemas/category.schema';
-import { authenticateToken, authorizeRole } from '../middleware/auth.middleware';
+import { authenticateToken, authorizeRole, authenticateTokenOptional } from '../middleware/auth.middleware';
 import { Role } from '@prisma/client';
 
 const router = Router();
 
-// Public routes
-router.get('/', getAllCategoriesHandler);
-router.get('/:id', getCategoryByIdHandler);
+// Public routes (with optional auth for Role based filtering)
+router.get('/', authenticateTokenOptional, getAllCategoriesHandler);
+router.get('/:id', authenticateTokenOptional, getCategoryByIdHandler);
 
 // Admin-only routes
 router.post(
-    '/', 
-    authenticateToken, 
-    authorizeRole(Role.ADMIN), 
-    validateRequest(createCategorySchema), 
+    '/',
+    authenticateToken,
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
+    validateRequest(createCategorySchema),
     createCategoryHandler
 );
 
 router.put(
-    '/:id', 
-    authenticateToken, 
-    authorizeRole(Role.ADMIN), 
-    validateRequest(updateCategorySchema), 
+    '/:id',
+    authenticateToken,
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
+    validateRequest(updateCategorySchema),
     updateCategoryHandler
 );
 
 router.delete(
-    '/:id', 
-    authenticateToken, 
-    authorizeRole(Role.ADMIN), 
+    '/:id',
+    authenticateToken,
+    authorizeRole([Role.ADMIN]), // DEĞİŞTİRİLDİ
     deleteCategoryHandler
 );
 

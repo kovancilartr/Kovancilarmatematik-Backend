@@ -9,7 +9,7 @@ export const createCategoryHandler = async (req: Request<{}, {}, CreateCategoryI
     res.status(201).json(createSuccessResponse(category, 'Category created successfully'));
   } catch (error: any) {
     if (error.code === 'P2002') {
-        return res.status(409).json(createErrorResponse('CONFLICT', 'Category with this name already exists'));
+      return res.status(409).json(createErrorResponse('CONFLICT', 'Category with this name already exists'));
     }
     res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
   }
@@ -17,7 +17,8 @@ export const createCategoryHandler = async (req: Request<{}, {}, CreateCategoryI
 
 export const getAllCategoriesHandler = async (req: Request, res: Response) => {
   try {
-    const categories = await categoryService.getAllCategories();
+    const user = (req as any).user; // Cast to any or AuthenticatedRequest if imported
+    const categories = await categoryService.getAllCategories(user);
     res.status(200).json(createSuccessResponse(categories, 'Categories retrieved successfully'));
   } catch (error: any) {
     res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
@@ -25,16 +26,20 @@ export const getAllCategoriesHandler = async (req: Request, res: Response) => {
 };
 
 export const getCategoryByIdHandler = async (req: Request<{ id: string }>, res: Response) => {
-    try {
-      const category = await categoryService.getCategoryById(req.params.id);
-      if (!category) {
-        return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
-      }
-      res.status(200).json(createSuccessResponse(category, 'Category retrieved successfully'));
-    } catch (error: any) {
-      res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
+  try {
+    const user = (req as any).user;
+    const category = await categoryService.getCategoryById(req.params.id, user); // Pass user
+    if (!category) {
+      return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
     }
-  };
+    res.status(200).json(createSuccessResponse(category, 'Category retrieved successfully'));
+  } catch (error: any) {
+    if (error.message === 'ACCESS_DENIED') {
+      return res.status(403).json(createErrorResponse('FORBIDDEN', 'You do not have permission to access this course.'));
+    }
+    res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
+  }
+};
 
 export const updateCategoryHandler = async (req: Request<{ id: string }, {}, UpdateCategoryInput>, res: Response) => {
   try {
@@ -42,24 +47,24 @@ export const updateCategoryHandler = async (req: Request<{ id: string }, {}, Upd
     res.status(200).json(createSuccessResponse(updatedCategory, 'Category updated successfully'));
   } catch (error: any) {
     if (error.code === 'P2025') {
-        return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
+      return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
     }
     if (error.code === 'P2002') {
-        return res.status(409).json(createErrorResponse('CONFLICT', 'Category with this name already exists'));
+      return res.status(409).json(createErrorResponse('CONFLICT', 'Category with this name already exists'));
     }
     res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
   }
 };
 
 export const deleteCategoryHandler = async (req: Request<{ id: string }>, res: Response) => {
-    try {
-        await categoryService.deleteCategory(req.params.id);
-        res.status(200).json(createSuccessResponse(null, 'Category deleted successfully'));
-    } catch (error: any) {
-        if (error.code === 'P2025') {
-            return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
-        }
-        res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
+  try {
+    await categoryService.deleteCategory(req.params.id);
+    res.status(200).json(createSuccessResponse(null, 'Category deleted successfully'));
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      return res.status(404).json(createErrorResponse('NOT_FOUND', 'Category not found'));
     }
+    res.status(500).json(createErrorResponse('SERVER_ERROR', error.message));
+  }
 };
 
