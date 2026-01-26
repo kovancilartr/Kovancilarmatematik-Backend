@@ -11,10 +11,10 @@ type UpdateTestInput = z.infer<typeof updateTestSchema>['body'];
 
 export const createTestHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { name, description, questions } = req.body as CreateTestInput;
+    const { name, description, durationMinutes, maxAttempts, learningObjectiveId, questions } = req.body as CreateTestInput;
     const createdById = req.user!.id; // Non-null assertion because authenticateToken middleware ensures user exists
 
-    const testData = { name, description, questions, createdById };
+    const testData = { name, description, durationMinutes, maxAttempts, learningObjectiveId, questions, createdById };
     const test = await testService.createTest(testData);
 
     return res.status(201).json(createSuccessResponse(test, 'Test created successfully'));
@@ -58,6 +58,9 @@ export const updateTestHandler = async (req: AuthenticatedRequest, res: Response
     const updatedTest = await testService.updateTestDetails(id, {
       name: testData.name,
       description: testData.description,
+      durationMinutes: testData.durationMinutes,
+      maxAttempts: testData.maxAttempts,
+      learningObjectiveId: testData.learningObjectiveId,
       questions: testData.questions, // Pass questions to service
     });
 

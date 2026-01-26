@@ -8,11 +8,14 @@ const testQuestionSchema = z.object({
 const testBodyBase = z.object({
   name: z.string({ required_error: 'Test name is required' }).min(3, 'Test name must be at least 3 characters long'),
   description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+  durationMinutes: z.number().int().positive('Duration must be a positive integer').optional(),
+  maxAttempts: z.number().int().min(0, 'Max attempts must be 0 or greater').default(0),
+  learningObjectiveId: z.string().uuid('Learning Objective ID must be a valid UUID').optional(),
   questions: z.array(testQuestionSchema)
-              .min(1, 'A test must have at least one question')
-              .refine(items => new Set(items.map(i => i.order)).size === items.length, {
-                message: 'Question order numbers must be unique',
-              }),
+    .min(1, 'A test must have at least one question')
+    .refine(items => new Set(items.map(i => i.order)).size === items.length, {
+      message: 'Question order numbers must be unique',
+    }),
 });
 
 export const createTestSchema = z.object({
