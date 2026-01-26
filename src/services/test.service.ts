@@ -9,19 +9,24 @@ interface QuestionData {
 interface TestData {
   name: string;
   description?: string;
+  durationMinutes?: number;
+  maxAttempts?: number;
   createdById: string;
+  learningObjectiveId?: string;
   questions: QuestionData[];
 }
 
 export const createTest = async (data: TestData) => {
-  const { name, description, createdById, questions } = data;
+  const { name, description, durationMinutes, maxAttempts, createdById, questions } = data;
 
   return prisma.$transaction(async (tx) => {
-    // 1. Create the Test blueprint
     const newTest = await tx.test.create({
       data: {
         name,
         description,
+        durationMinutes,
+        maxAttempts: maxAttempts ?? 0,
+        learningObjectiveId: data.learningObjectiveId,
         createdById,
       },
     });
@@ -104,6 +109,9 @@ export const updateTestDetails = async (
   data: {
     name?: string;
     description?: string;
+    durationMinutes?: number;
+    maxAttempts?: number;
+    learningObjectiveId?: string;
     questions?: { questionId: string; order: number }[]
   }
 ) => {
@@ -132,6 +140,9 @@ export const updateTestDetails = async (
         data: {
           name: data.name,
           description: data.description,
+          durationMinutes: data.durationMinutes,
+          maxAttempts: data.maxAttempts,
+          learningObjectiveId: data.learningObjectiveId,
         },
       });
     });
@@ -143,6 +154,9 @@ export const updateTestDetails = async (
     data: {
       name: data.name,
       description: data.description,
+      durationMinutes: data.durationMinutes,
+      maxAttempts: data.maxAttempts,
+      learningObjectiveId: data.learningObjectiveId,
     },
   });
 };

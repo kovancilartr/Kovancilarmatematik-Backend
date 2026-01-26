@@ -59,21 +59,34 @@ async function main() {
       data: {
         name: categoryName,
         order: 1,
+        isPublished: true,
+        isPublic: true,
         subjects: {
           create: [
             {
               name: 'Temel Kavramlar',
               order: 1,
-              lessons: {
+              isPublic: true,
+              learningObjectives: {
                 create: [
                   {
-                    name: 'Sayı Kümeleri ve İşlem Yeteneği',
-                    videoUrl: 'https://www.youtube.com/watch?v=example1',
-                    materials: {
+                    name: 'Sayı Kümeleri ve İşlemler',
+                    order: 1,
+                    lessons: {
                       create: [
                         {
-                          name: 'Temel Kavramlar Çalışma Kağıdı.pdf',
-                          url: '/uploads/materials/example1.pdf',
+                          name: 'Sayı Kümeleri ve İşlem Yeteneği',
+                          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                          order: 1,
+                          materials: {
+                            create: [
+                              {
+                                name: 'Temel Kavramlar Çalışma Kağıdı.pdf',
+                                url: '/uploads/materials/example1.pdf',
+                                order: 1,
+                              },
+                            ],
+                          },
                         },
                       ],
                     },
@@ -84,24 +97,38 @@ async function main() {
             {
               name: 'EBOB-EKOK',
               order: 2,
-              lessons: {
+              isPublic: true,
+              learningObjectives: {
                 create: [
                   {
-                    name: 'EBOB-EKOK Konu Anlatımı',
-                    videoUrl: 'https://www.youtube.com/watch?v=example2',
-                  }
-                ]
-              }
-            }
+                    name: 'EBOB ve EKOK Kavramları',
+                    order: 1,
+                    lessons: {
+                      create: [
+                        {
+                          name: 'EBOB-EKOK Konu Anlatımı',
+                          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                          order: 1,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
           ],
         },
       },
       include: {
         subjects: {
           include: {
-            lessons: {
+            learningObjectives: {
               include: {
-                materials: true,
+                lessons: {
+                  include: {
+                    materials: true,
+                  },
+                },
               },
             },
           },

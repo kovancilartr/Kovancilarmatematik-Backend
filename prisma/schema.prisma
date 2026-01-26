@@ -32,26 +32,29 @@ model Subject {
   isPublic           Boolean               @default(false) // Herkes erişebilir mi? (false = sadece üyeler)
   categoryId         String
   category           Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  lessons            Lesson[] // Bu konuya ait dersler
   enrollments        Enrollment[] // Bu konuya kayıtlı öğrenciler
   learningObjectives LearningObjective[] // Bu konuya ait kazanımlar
 }
 
 // Ders (Örn: Ebob-Ekok-1, Logaritma-2) - Video dersler için
+// ARTIK KAZANIMA BAĞLI
 model Lesson {
-  id        String     @id @default(uuid())
-  name      String // Dersin adı
-  videoUrl  String // Dersin video linki
-  subjectId String
-  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  materials Material[] // Derse ait ek materyaller
+  id                  String            @id @default(uuid())
+  name                String // Dersin adı
+  videoUrl            String // Dersin video linki
+  order               Int // Kazanım içindeki sıralaması
+  learningObjectiveId String
+  learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+  materials           Material[] // Derse ait ek materyaller
 }
+
 
 // Materyal (Örn: Ebob-Ekok-Test.pdf)
 model Material {
   id       String @id @default(uuid())
   name     String // Materyalin adı
   url      String // Materyalin dosya linki
+  order    Int // Ders içindeki sıralaması
   lessonId String
   lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
@@ -67,7 +70,9 @@ model LearningObjective {
   order     Int    // Sıralama için
   subjectId String
   subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]   // Bu kazanıma ait dersler
   questions Question[] // Bu kazanıma ait sorular
+  tests     Test[]     // Bu kazanıma atanan testler
 
   @@map("learning_objectives")
 }
@@ -88,9 +93,13 @@ model Question {
 
 // Test (Sorulardan oluşan şablon)
 model Test {
-  id            String           @id @default(uuid())
-  name          String // Testin adı (Örn: "Köklü Sayılar Genel Tekrar")
-  description   String?
+  id                  String             @id @default(uuid())
+  name                String // Testin adı (Örn: "Köklü Sayılar Genel Tekrar")
+  description         String?
+  durationMinutes     Int? // Test süresi (dakika cinsinden, null ise süresiz)
+  maxAttempts         Int                @default(0) // Maksimum deneme sayısı (0 = sınırsız)
+  learningObjectiveId String? // Testin atandığı kazanım (Opsiyonel olabilir, genel testler için)
+  learningObjective   LearningObjective? @relation(fields: [learningObjectiveId], references: [id])
   createdById   String
   createdBy     User             @relation("UserTests", fields: [createdById], references: [id])
   questions     TestQuestion[] // Testteki sorular (sıralı)
@@ -124,7 +133,6 @@ model TestAssignment {
   completedAt    DateTime?
   studentAnswers StudentAnswer[]
 
-  @@unique([testId, studentId]) // Bir öğrenciye aynı test sadece bir kere atanabilir
   @@map("test_assignments")
 }
 

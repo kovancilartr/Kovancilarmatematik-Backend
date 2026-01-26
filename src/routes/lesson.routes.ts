@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
     createLessonHandler,
     getAllLessonsHandler,
-    getLessonsBySubjectIdHandler,
+    getLessonsByLearningObjectiveIdHandler,
     getLessonByIdHandler,
     updateLessonHandler,
     deleteLessonHandler
@@ -16,7 +16,7 @@ const router = Router();
 
 // Public routes
 router.get('/', getAllLessonsHandler); // Get all lessons
-router.get('/subject/:subjectId', getLessonsBySubjectIdHandler); // Get lessons by Subject ID
+router.get('/learningObjective/:learningObjectiveId', getLessonsByLearningObjectiveIdHandler); // Get lessons by Learning Objective ID
 router.get('/:id', getLessonByIdHandler); // Get a single lesson by ID
 
 // Admin-only routes

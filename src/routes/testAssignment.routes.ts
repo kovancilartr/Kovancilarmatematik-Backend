@@ -1,61 +1,22 @@
 import { Router } from 'express';
-import {
-  createAssignmentsHandler,
-  getMyAssignmentsHandler,
-  getMyAssignmentDetailsHandler,
-  startMyTestHandler,
-  saveMyAnswerHandler,
-  submitMyTestHandler,
-} from '../controllers/testAssignment.controller';
-import { validateRequest } from '../middleware/validation.middleware';
-import { createTestAssignmentSchema, submitAnswerSchema } from '../schemas/testAssignment.schema';
-import { authenticateToken, authorizeRole } from '../middleware/auth.middleware';
-import { Role } from '@prisma/client';
+import * as testAssignmentController from '../controllers/test-assignment.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
-// All assignment routes require authentication
+// All routes require authentication
 router.use(authenticateToken);
 
-// == Teacher / Admin Routes ==
-router.post(
-  '/',
-  authorizeRole([Role.ADMIN, Role.TEACHER]),
-  validateRequest(createTestAssignmentSchema),
-  createAssignmentsHandler
-);
+// Submit a test (create test assignment with answers)
+router.post('/', testAssignmentController.submitTestHandler);
 
+// Get all test assignments for current user
+router.get('/my-tests', testAssignmentController.getMyTestAssignmentsHandler);
 
-// == Student Routes ==
-router.get(
-  '/my',
-  authorizeRole([Role.STUDENT]),
-  getMyAssignmentsHandler
-);
+// Check attempt limit for a test
+router.get('/check-attempt/:testId', testAssignmentController.checkTestAttemptHandler);
 
-router.get(
-  '/my/:assignmentId',
-  authorizeRole([Role.STUDENT]),
-  getMyAssignmentDetailsHandler
-);
-
-router.post(
-  '/my/:assignmentId/start',
-  authorizeRole([Role.STUDENT]),
-  startMyTestHandler
-);
-
-router.post(
-  '/my/:assignmentId/answers',
-  authorizeRole([Role.STUDENT]),
-  validateRequest(submitAnswerSchema),
-  saveMyAnswerHandler
-);
-
-router.post(
-  '/my/:assignmentId/submit',
-  authorizeRole([Role.STUDENT]),
-  submitMyTestHandler
-);
+// Get specific test assignment by ID
+router.get('/:id', testAssignmentController.getTestAssignmentByIdHandler);
 
 export default router;
