@@ -10,13 +10,6 @@ const questionBodyBase = z.object({
   learningObjectiveId: z.string({ required_error: 'Learning Objective ID is required' }).uuid('Learning Objective ID must be a valid UUID'),
 });
 
-export const createQuestionSchema = z.object({
-  body: questionBodyBase,
-});
+export const createQuestionSchema = questionBodyBase;
 
-export const updateQuestionSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('The ID must be a valid UUID'),
-  }),
-  body: questionBodyBase.partial(), // All fields are optional for update
-});
+export const updateQuestionSchema = questionBodyBase.partial();

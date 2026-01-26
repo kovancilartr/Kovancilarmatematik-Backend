@@ -6,13 +6,6 @@ const learningObjectiveBodyBase = z.object({
   subjectId: z.string({ required_error: 'Subject ID is required' }).uuid('Subject ID must be a valid UUID'),
 });
 
-export const createLearningObjectiveSchema = z.object({
-  body: learningObjectiveBodyBase,
-});
+export const createLearningObjectiveSchema = learningObjectiveBodyBase;
 
-export const updateLearningObjectiveSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('The ID must be a valid UUID'),
-  }),
-  body: learningObjectiveBodyBase.partial(), // All fields are optional
-});
+export const updateLearningObjectiveSchema = learningObjectiveBodyBase.partial();

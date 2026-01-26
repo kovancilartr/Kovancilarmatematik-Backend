@@ -5,8 +5,8 @@ import { createLearningObjectiveSchema, updateLearningObjectiveSchema } from '..
 import { z } from 'zod';
 
 // Infer TS types from Zod schemas
-type CreateLearningObjectiveInput = z.infer<typeof createLearningObjectiveSchema>['body'];
-type UpdateLearningObjectiveInput = z.infer<typeof updateLearningObjectiveSchema>['body'];
+type CreateLearningObjectiveInput = z.infer<typeof createLearningObjectiveSchema>;
+type UpdateLearningObjectiveInput = z.infer<typeof updateLearningObjectiveSchema>;
 
 export const createLearningObjectiveHandler = async (req: Request<{}, {}, CreateLearningObjectiveInput>, res: Response) => {
   try {
@@ -58,8 +58,7 @@ export const updateLearningObjectiveHandler = async (req: Request<{ id: string }
     const { id } = req.params;
     const updatedLearningObjective = await learningObjectiveService.updateLearningObjective(id, req.body);
     return res.status(200).json(createSuccessResponse(updatedLearningObjective, 'Learning objective updated successfully'));
-  } catch (error: any)
-  {
+  } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json(createErrorResponse('NOT_FOUND', 'The learning objective or associated subject not found.'));
     }

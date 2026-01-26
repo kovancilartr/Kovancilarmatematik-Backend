@@ -35,12 +35,10 @@ const nameSchema = z
  * Create User Schema
  */
 export const createUserSchema = z.object({
-    body: z.object({
-        email: emailSchema,
-        name: nameSchema,
-        password: passwordSchema,
-        role: z.nativeEnum(Role),
-    }),
+    email: emailSchema,
+    name: nameSchema,
+    password: passwordSchema,
+    role: z.nativeEnum(Role),
 });
 
 /**
@@ -48,10 +46,8 @@ export const createUserSchema = z.object({
  * Password is optional. If provided, it will be updated.
  */
 export const updateUserSchema = z.object({
-    body: z.object({
-        email: emailSchema.optional(),
-        name: nameSchema.optional(),
-        password: passwordSchema.optional(), // Optional for updates
-        role: z.nativeEnum(Role).optional(),
-    }),
+    email: emailSchema.optional(),
+    name: nameSchema.optional(),
+    password: passwordSchema.optional(), // Optional for updates
+    role: z.nativeEnum(Role).optional(),
 });

@@ -18,17 +18,6 @@ const testBodyBase = z.object({
     }),
 });
 
-export const createTestSchema = z.object({
-  body: testBodyBase,
-});
+export const createTestSchema = testBodyBase;
 
-export const updateTestSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('The ID must be a valid UUID'),
-  }),
-  // For update, we allow partial modifications.
-  // Updating questions is a complex operation (add/remove/reorder), 
-  // so we might handle it with separate endpoints later.
-  // For now, we allow updating name/description and the entire questions array.
-  body: testBodyBase.partial(),
-});
+export const updateTestSchema = testBodyBase.partial();

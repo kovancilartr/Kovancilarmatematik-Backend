@@ -5,19 +5,19 @@ import { createTestAssignmentSchema, submitAnswerSchema } from '../schemas/testA
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { z } from 'zod';
 
-type CreateTestAssignmentInput = z.infer<typeof createTestAssignmentSchema>['body'];
-type SubmitAnswerInput = z.infer<typeof submitAnswerSchema>['body'];
+type CreateTestAssignmentInput = z.infer<typeof createTestAssignmentSchema>;
+type SubmitAnswerInput = z.infer<typeof submitAnswerSchema>;
 
 // FOR TEACHERS/ADMINS
 export const createAssignmentsHandler = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const { testId, studentIds } = req.body as CreateTestAssignmentInput;
-    const creatorId = req.user!.id;
-    const result = await service.createAssignments(testId, studentIds, creatorId);
-    return res.status(201).json(createSuccessResponse(result, `${result.count} assignment(s) created successfully.`));
-  } catch (error: any) {
-    return res.status(400).json(createErrorResponse('BAD_REQUEST', error.message));
-  }
+    try {
+        const { testId, studentIds } = req.body as CreateTestAssignmentInput;
+        const creatorId = req.user!.id;
+        const result = await service.createAssignments(testId, studentIds, creatorId);
+        return res.status(201).json(createSuccessResponse(result, `${result.count} assignment(s) created successfully.`));
+    } catch (error: any) {
+        return res.status(400).json(createErrorResponse('BAD_REQUEST', error.message));
+    }
 };
 
 // FOR STUDENTS
@@ -36,7 +36,7 @@ export const getMyAssignmentDetailsHandler = async (req: AuthenticatedRequest, r
         const studentId = req.user!.id;
         const { assignmentId } = req.params;
         const assignment = await service.getAssignmentDetailsForStudent(assignmentId, studentId);
-        if(!assignment) {
+        if (!assignment) {
             return res.status(404).json(createErrorResponse('NOT_FOUND', 'Assignment not found or does not belong to you.'));
         }
         return res.status(200).json(createSuccessResponse(assignment, 'Assignment details retrieved successfully.'));

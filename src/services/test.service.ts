@@ -69,7 +69,8 @@ export const getAllTests = async () => {
       },
       _count: {
         select: { questions: true } // Get the number of questions in each test
-      }
+      },
+      learningObjective: true,
     }
   });
 };

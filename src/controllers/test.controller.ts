@@ -6,8 +6,8 @@ import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { z } from 'zod';
 
 // Infer TS types from Zod schemas
-type CreateTestInput = z.infer<typeof createTestSchema>['body'];
-type UpdateTestInput = z.infer<typeof updateTestSchema>['body'];
+type CreateTestInput = z.infer<typeof createTestSchema>;
+type UpdateTestInput = z.infer<typeof updateTestSchema>;
 
 export const createTestHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {

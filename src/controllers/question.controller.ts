@@ -5,8 +5,8 @@ import { createQuestionSchema, updateQuestionSchema } from '../schemas/question.
 import { z } from 'zod';
 
 // Infer TS types from Zod schemas
-type CreateQuestionInput = z.infer<typeof createQuestionSchema>['body'];
-type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>['body'];
+type CreateQuestionInput = z.infer<typeof createQuestionSchema>;
+type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>;
 
 export const createQuestionHandler = async (req: Request<{}, {}, CreateQuestionInput>, res: Response) => {
   try {

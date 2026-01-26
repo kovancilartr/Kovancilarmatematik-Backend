@@ -66,39 +66,34 @@ const refreshTokenSchema = z
 /**
  * Login request schema
  */
+/**
+ * Login request schema
+ */
 export const loginSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    password: loginPasswordSchema,
-  }),
+  email: emailSchema,
+  password: loginPasswordSchema,
 });
 
 /**
  * Register request schema (now used for creating users by admin)
  */
 export const registerSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    password: strongPasswordSchema,
-    name: nameSchema,
-    role: z.nativeEnum(Role),
-  }),
+  email: emailSchema,
+  password: strongPasswordSchema,
+  name: nameSchema,
+  role: z.nativeEnum(Role),
 });
 
 /**
  * Refresh token request schema
  */
 export const refreshTokenRequestSchema = z.object({
-  body: z.object({
-    refreshToken: refreshTokenSchema,
-  }),
+  refreshToken: refreshTokenSchema,
 });
 
 /**
  * Logout request schema
  */
 export const logoutSchema = z.object({
-  body: z.object({
-    refreshToken: refreshTokenSchema,
-  }),
+  refreshToken: refreshTokenSchema,
 });
