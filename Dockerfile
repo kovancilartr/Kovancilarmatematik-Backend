@@ -26,8 +26,8 @@ RUN npm run build
 # Stage 2: Create the production image
 FROM node:22-alpine
 
-# Install OpenSSL for Prisma
-RUN apk add --no-cache openssl
+# Install OpenSSL for Prisma and curl for healthcheck
+RUN apk add --no-cache openssl curl
 
 WORKDIR /app
 
