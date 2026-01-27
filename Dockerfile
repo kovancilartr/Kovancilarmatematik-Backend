@@ -51,8 +51,5 @@ ENV PORT=3000
 # Expose the port (Coolify usually maps internal port)
 EXPOSE 3000
 
-# Debug: Check if dist exists and has content
-RUN ls -la /app/dist
-
 # Command to start the application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
