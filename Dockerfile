@@ -51,7 +51,5 @@ ENV PORT=3000
 # Expose the port (Coolify usually maps internal port)
 EXPOSE 3000
 
-# Command to run migrations and start the application
-# Note: Using `npx prisma migrate deploy` in production startup is risky for zero-downtime, but standard for simple setups.
-# Ensure `node dist/index.js` matches your build output entry point.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+# Command to start the application
+CMD ["node", "dist/index.js"]
