@@ -11,7 +11,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install dependencies including devDependencies for build
-RUN npm ci
+# Use --include=dev because NODE_ENV might be set to production by the build environment
+RUN npm ci --include=dev
 
 # Copy the rest of the application source code
 COPY . .
