@@ -8,10 +8,10 @@ WORKDIR /app
 
 # Enable corepack for yarn support if needed, or simply use yarn as it comes with node images often
 # Copy package files
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
 # Install dependencies including devDependencies for build
-RUN yarn install --frozen-lockfile
+RUN npm ci
 
 # Copy the rest of the application source code
 COPY . .
@@ -20,7 +20,7 @@ COPY . .
 RUN npx prisma generate
 
 # Build the TypeScript code
-RUN yarn build
+RUN npm run build
 
 # Stage 2: Create the production image
 FROM node:22-alpine
@@ -31,10 +31,10 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
 # Install only production dependencies
-RUN yarn install --production --frozen-lockfile && yarn cache clean
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/dist ./dist
