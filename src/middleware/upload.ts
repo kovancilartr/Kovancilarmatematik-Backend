@@ -1,3 +1,4 @@
+import { RequestHandler } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -12,7 +13,7 @@ if (!fs.existsSync(uploadDir)) {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = 'uploads/';
-    
+
     // Dosya tipine göre klasör belirle
     if (file.mimetype.startsWith('image/')) {
       folder += 'images/';
@@ -23,12 +24,12 @@ const storage = multer.diskStorage({
     } else {
       folder += 'others/';
     }
-    
+
     // Klasörü oluştur
     if (!fs.existsSync(folder)) {
       fs.mkdirSync(folder, { recursive: true });
     }
-    
+
     cb(null, folder);
   },
   filename: (req, file, cb) => {
@@ -45,7 +46,7 @@ const fileFilter = (req: any, file: any, cb: any) => {
   // İzin verilen dosya tipleri
   const allowedTypes = [
     'image/jpeg',
-    'image/jpg', 
+    'image/jpg',
     'image/png',
     'image/gif',
     'video/mp4',
@@ -53,7 +54,7 @@ const fileFilter = (req: any, file: any, cb: any) => {
     'video/mov',
     'application/pdf'
   ];
-  
+
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -72,15 +73,15 @@ export const upload = multer({
 });
 
 // Tek dosya upload
-export const uploadSingle = (fieldName: string) => upload.single(fieldName);
+export const uploadSingle = (fieldName: string) => upload.single(fieldName) as any;
 
 // Çoklu dosya upload
-export const uploadMultiple = (fieldName: string, maxCount: number = 5) => 
-  upload.array(fieldName, maxCount);
+export const uploadMultiple = (fieldName: string, maxCount: number = 5) =>
+  upload.array(fieldName, maxCount) as any;
 
 // Farklı alanlar için dosya upload
 export const uploadFields = upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'video', maxCount: 1 },
   { name: 'pdf', maxCount: 1 }
-]);
+]) as any;
